@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CosmeticGlammour</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* Ajustes do dropdown do perfil */
+.profile-area {
+    position: relative;
+    display: inline-block;
+}
+.profile-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-width: 150px;
+    z-index: 100;
+}
+.avatar-small {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+#profileName {
+    font-size: 12px;
+}
+.profile-actions button {
+    display: block;
+    width: 100%;
+    margin: 3px 0;
+}
+</style>
+</head>
+<body>
+
+
+<header>
+    <div class="header-top">
+        <h1 class="logo">CosmeticGlammour</h1>
+
+
+        <!-- PERFIL -->
+        <div class="profile-area" id="profileArea">
+            <img id="profileAvatar" class="avatar" src="img/perfil.png">
+            <div class="profile-dropdown" id="profileDropdown">
+                <div id="profileInfo">
+                    <img id="profileAvatarSmall" class="avatar-small" src="img/perfil.png">
+                    <div>
+                        <strong id="profileName">Convidado</strong>
+                        <div id="profileRole" class="small">Não logado</div>
+                    </div>
+                </div>
+
+
+                <hr>
+                <div class="profile-actions">
+                    <button id="openLoginBtn">Entrar</button>
+                    <button id="openRegisterBtn">Cadastrar</button>
+                    <button id="logoutBtn" style="display:none">Sair</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <nav>
+        <button onclick="showTab('produtos')" class="active">Produtos</button>
+        <button onclick="showTab('carrinho')">Carrinho</button>
+        <button onclick="showTab('conta')">Conta</button>
+        <button id="adminMenuBtn" onclick="showTab('admin')" style="display:none">Admin</button>
+    </nav>
+</header>
+
+
+<main>
+    <!-- PRODUTOS -->
+    <section id="produtos" class="tab active">
+        <h2>Catálogo</h2>
+        <input type="text" id="searchBar" placeholder="Buscar..." onkeyup="searchProducts()">
+        <div class="grid" id="listaProdutos"></div>
+    </section>
+
+
+    <!-- CARRINHO -->
+    <section id="carrinho" class="tab">
+        <h2>Carrinho</h2>
+        <ul id="listaCarrinho"></ul>
+        <strong>Total: R$ <span id="cartTotal">0.00</span></strong>
+        <br><br>
+        <button onclick="finalizarCompra()">Finalizar Compra</button>
+    </section>
+
+
+    <!-- CONTA -->
+    <section id="conta" class="tab">
+        <h2>Entrar / Cadastrar</h2>
+
+
+        <div class="forms-container">
+            <form id="loginForm">
+                <h3>Entrar</h3>
+                <input id="loginUser" placeholder="Usuário">
+                <input id="loginPass" type="password" placeholder="Senha">
+                <button>Entrar</button>
+                <a onclick="openRecovery()" style="cursor:pointer">Esqueci a senha</a>
+            </form>
+
+
+            <form id="registerForm">
+                <h3>Cadastrar</h3>
+                <input id="cadUser" placeholder="Usuário">
+                <input id="cadPass" type="password" placeholder="Senha">
+                <label>Foto (opcional)</label>
+                <input type="file" id="cadAvatar" accept="image/*">
+                <button>Cadastrar</button>
+            </form>
+        </div>
+    </section>
+
+
+    <!-- PERFIL DO CLIENTE -->
+    <section id="perfil" class="tab">
+        <h2>Meu Perfil</h2>
+        <img id="perfilFoto" class="avatar-large" src="img/perfil.png">
+        <p><strong>Usuário:</strong> <span id="perfilNome"></span></p>
+
+
+        <h3>Meus Pedidos</h3>
+        <ul id="pedidoLista"></ul>
+    </section>
+
+
+    <!-- ADMIN -->
+    <section id="admin" class="tab">
+        <h2>Admin - Gerenciar Produtos</h2>
+        <button onclick="openProductModal('create')">Adicionar Produto</button>
+        <div id="adminList" class="grid"></div>
+    </section>
+</main>
+
+
+<!-- MODAL PRODUTO -->
+<div id="productModal" class="modal">
+  <div class="modal-content">
+      <h3 id="modalTitle">Produto</h3>
+      <form id="productForm">
+          <input id="prodNome" placeholder="Nome">
+          <input id="prodPreco" type="number" placeholder="Preço">
+          <input id="prodImg" placeholder="URL da imagem">
+          <label>Ou carregar imagem</label>
+          <input type="file" id="prodImgFile" accept="image/*">
+
+
+          <button>Salvar</button>
+          <button type="button" onclick="closeProductModal()">Cancelar</button>
+      </form>
+  </div>
+</div>
+
+
+<!-- MODAL CONFIRM -->
+<div id="confirmModal" class="modal">
+  <div class="modal-content">
+     <p id="confirmText">Confirmar ação?</p>
+     <button id="confirmYes">Sim</button>
+     <button onclick="closeConfirm()">Não</button>
+  </div>
+</div>
+
+
+<script src="script.js"></script>
+<script>
+/* Dropdown funcional */
+const profileArea = document.getElementById('profileArea');
+const profileDropdown = document.getElementById('profileDropdown');
+const openLoginBtn = document.getElementById('openLoginBtn');
+const openRegisterBtn = document.getElementById('openRegisterBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const profileName = document.getElementById('profileName');
+
+
+let loggedInUser = null; // null = convidado
+
+
+profileArea.addEventListener('click', () => {
+    profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+});
+
+
+// Exemplo simples de login/sair
+openLoginBtn.addEventListener('click', () => {
+    showTab('conta');
+    profileDropdown.style.display = 'none';
+});
+openRegisterBtn.addEventListener('click', () => {
+    showTab('conta');
+    profileDropdown.style.display = 'none';
+});
+logoutBtn.addEventListener('click', () => {
+    loggedInUser = null;
+    profileName.textContent = "Convidado";
+    logoutBtn.style.display = 'none';
+    openLoginBtn.style.display = 'block';
+    openRegisterBtn.style.display = 'block';
+    profileDropdown.style.display = 'none';
+});
+function setUser(userName) {
+    loggedInUser = userName;
+    profileName.textContent = userName;
+    logoutBtn.style.display = 'block';
+    openLoginBtn.style.display = 'none';
+    openRegisterBtn.style.display = 'none';
+}
+</script>
+</body>
+</html>
