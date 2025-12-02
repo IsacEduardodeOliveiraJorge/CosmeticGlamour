@@ -22,8 +22,8 @@ const initialProducts = [
     {nome:'Batom Matte Rosa', preco:29.90, img:'img/batonrosa.webp'},
     {nome:'Batom Vermelho Clássico', preco:32.90, img:'img/batonvermelho.jpg'},
     {nome:'Gloss Labial Holográfico', preco:22.50, img:'img/GlossHolografico.jpg'},
-    {nome:'Gloss Transparente', preco:18.00, img:'https://i.imgur.com/qIVIYk0.jpeg'},
-    {nome:'Base Líquida Alta Cobertura', preco:49.90, img:'https://i.imgur.com/7Es7uYK.jpeg'}
+    {nome:'Gloss Transparente', preco:18.00, img:'img/GlossHolografico.jpg'},
+    {nome:'Base Líquida Alta Cobertura', preco:49.90, img:'img/baseliquida.webp'}
 ];
 
 if (!localStorage.getItem("produtos")) {
